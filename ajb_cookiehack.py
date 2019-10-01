@@ -21,42 +21,88 @@ from six import itervalues
 # FGIXTURES related data into a less cryptic JSON dataset
 
 class cookiebakery:
-    """Base class to manage fixtires related info"""
-    """This JSON dataset may be publically accessible."""
-    """So it doesn't require any auth"""
+    """Class to identify a user via userid passed in cmdline args"""
+    """and then locate the correct cookie to set for this user"""
+    """Known cookies are held in-line in a dict. Not in an editible file"""
+    """Instance INIT does **NOT** install the cookie."""
 
     # Class Global attributes
-    this_event = ""
+    user = ""
+    password = ""
     api_get_status = ""
-    standings_t = ""
     bootstrap = ""
-    ds_df0 = ""        # Data science DATA FRAME 0  (fixtures)
+    my_cookie = ""
+    request = ""
 
-    def __init__(self, playerid, bootstrapdb, eventnum):
-        self.eventnum = str(eventnum)
-        self.playeridnum = playerid
-        logging.info('allfixtures:: - create fixtures class instance for gameweek: %s' % self.eventnum )
-# new v3.0 cookie hack
-        s = requests.Session()
-        user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'}
-        API_URL0 = 'https://fantasy.premierleague.com/a/login'
-        API_URL1 = FPL_API_URL + 'fixtures/?event=' + self.eventnum
+    def __init__(self, username, password, request_session):
+        """Instantiation does **NOT** install a cookie"""
+        """It just locates the correct cookie to use based on the username credentials."""
+        """Do the physical install seperately via the set_cookie method"""
 
-        logging.info('get_opponents_squad:: EXTRACT saved cookie from bootstrap for playerid: %s' % self.playeridnum )
-        logging.info('get_opponents_squad:: SET cookie: %s' % self.bootstrap.my_cookie )
-        s.cookies.update({'pl_profile': self.bootstrap.my_cookie})
+        self.user = username
+        self.password = password
+        cookiebakery.user = username
 
-## Do REST API I/O now...
-# 1st get authenticates, but must use critical cookie (i.e. "pl_profile")
-# 2nd get does the data extraction if auth succeeds - failure = all JSON dicts/fields are empty
-        rx0 = s.get( API_URL0, headers=user_agent )
-        rx1 = s.get( API_URL1, headers=user_agent )
-        self.auth_status = rx0.status_code
-        self.gotdata_status = rx1.status_code
-        logging.info('allfixtures:: init - Logon AUTH url: %s' % rx0.url )
-        logging.info('allfixtures:: init - API data get url: %s' % rx1.url )
+        logging.info('cookiebakery() - INIT cookiebakery instance for user: %s' % self.user )
 
-        rx0_auth_cookie = requests.utils.dict_from_cookiejar(s.cookies)
-        logging.info('allfixtures:: AUTH login resp cookie: %s' % rx0_auth_cookie['pl_profile'] )
+        userid_cookies = { \
+                'dbrace@usakiwi.com': 'eyJzIjogIld6VXNNalUyTkRBM01USmQ6MWZpdE1COjZsNkJ4bngwaGNUQjFwa3hMMnhvN2h0OGJZTSIsICJ1IjogeyJsbiI6ICJBbHBoYSIsICJmYyI6IDM5LCAiaWQiOiAyNTY0MDcxMiwgImZuIjogIkRyb2lkIn19', \
+                'cynthia@usakiwi.com': 'eyJzIjogIld6SXNNalUyTkRBM01USmQ6MWh5aE9BOmdLcXg0S3RkSGR5UVRXRjUwVjhxZHR4RVNTayIsICJ1IjogeyJpZCI6IDI1NjQwNzEyLCAiZm4iOiAiRHJvaWQiLCAibG4iOiAiQWxwaGEiLCAiZmMiOiA1N319', \
+                'amelia@usakiwi.com': 'eyJzIjogIld6SXNOVGc0T0RnM05WMDoxaHlpdU46MlhhRDZlbkx3YU03WFdtb0tBWEhsYXlESlBnIiwgInUiOiB7ImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIiwgImxuIjogIkJyYWNlIiwgImZjIjogOH19', \
+                'family@usakiwi.com': 'eyJzIjogIld6VXNOVGc0T0RnM05WMDoxZnYzYWo6WGkxd1lMMnpLeW1pbThFTTVFeGEzVFdUaWtBIiwgInUiOiB7ImxuIjogIkJyYWNlIiwgImZjIjogOCwgImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIn19' }
 
+        for userid, cookie_hack in userid_cookies.items():
+            if userid == self.user:
+                #s.cookies.update({'????_cookie_to_set_hack_????': cookie_hack})
+                logging.info('cookiebakery() - FOUND - cookie for userid: %s' % userid )
+                logging.info('cookiebakery() - SET - cookie to: %s' % cookie_hack )
+                cookiebakery.api_get_status = "GOODCOOKIE"
+                cookiebakery.my_cookie = cookie_hack      # INSTALL users cookie as instance accessor
+                cookiebakery.request = request_session    # INSTALL request session used for this cookie hack as instance accessor
+                break    # found this players cookie
+            else:
+                logging.info('cookiebakery() NO MATCH - cookie/userid: %s' % userid )
+                cookiebakery.api_get_status = "FAILED"
+
+        if cookiebakery.api_get_status == "FAILED":
+            logging.info('cookiebakery() ABORT - No cookie for userid: %s EXITING... %s' % userid )
+            Return
+
+# Class methods
+    def set_cookie(self, request_session):
+        """Set and install a cookie for this userid into the Session structure"""
+        """You *should* only do this before executing the HTTP req GET on the wire"""
+        self.s = request_session
+        logging.info('cookiebakery::extract_cookie - EXTRACTed saved cookie from bootstrap for userid: %s' % cookiebakery.user )
+        logging.info('cookiebakery::extract_cookie - SET cookie: %s' % cookiebakery.my_cookie )
+        self.s.cookies.update({'????_cookie_to_set_hack_????': cookiebakery.my_cookie})
         return
+
+
+    def my_cookie(self):
+        """Small helper method to output this users cookie that must be used"""
+        """for any authentication operations"""
+
+        logging.info('cookiebakery::my_cookie - cookie ????_cookie_to_set_hack_????: %s' % cookiebakery.my_cookie )
+        return cookiebakery.my_cookie
+
+
+    def response_cookie(self, request_session):
+        """Output the RESPONSE cookie info returned from a request session"""
+        """This does not print the entire cookiejar array. Just 1 specific cookie"""
+        
+        self.s = request_session
+        r_auth_cookie = requests.utils.dict_from_cookiejar(self.s.cookies)
+        logging.info('cookiebakery::response_cookie AUTH login resp cookie: %s' % r_auth_cookie['????_cookie_to_set_hack_????'] )
+        return r_auth_cookie['????_cookie_to_set_hack_????']
+
+
+    def cookie_url(self):
+        """Output the URL and status associated with the session request for setting this cookie"""
+        """This method assumes the **original** session request that you used on class INIT"""
+
+        self.url = cookiebakery.request.url
+        self.status = cookiebakery.request.status_code
+        logging.info('cookiebakery::cookie_url - url: %s' % self.url )
+        logging.info('cookiebakery::cookie_url - url get status: %s' % self.status )
+        return self.url
