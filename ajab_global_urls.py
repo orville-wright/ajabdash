@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+
+FPL_API_URL = "https://fantasy.premierleague.com/api/"
+BSS = "bootstrap-static"
+BSD = "bootstrap-dynamic"
+MYTEAM = "my-team/"
+ENTRY = "entry/"
+ME = "me/"
+USER_SUMMARY_SUBURL = "element-summary/"
+LCS_SUBURL = "leagues-classic/"
+LEAGUE_H2H_STANDING_SUBURL = "leagues-h2h-standings/"
+PLAYERS_INFO_SUBURL = "bootstrap-static"
+PLAYERS_INFO_FILENAME = "allPlayersInfo.json"
+STANDINGS_URL = "https://fantasy.premierleague.com/api/leagues-classic/"
+PAGINATION = "?page_new_entries=1&page_standings=1&phase=1"
