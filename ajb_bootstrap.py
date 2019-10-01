@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 ############################################
 # note: Must be authourized by credentials
 #
-class fpl_bootstrap:
+class ajb_bootstrap:
     """Base class for extracting the core game ENTRY dataset"""
     """This class requires valid credentials"""
     """but does not contain the full player private ENTRY dataset"""
@@ -26,20 +26,19 @@ class fpl_bootstrap:
     # Class Global attributes
     username = ""
     password = ""
-    current_event = ""
+    current_week = ""
     api_get_status = ""
-    standings_t = ""
     epl_team_names = {}
     my_cookie = ""
 
-    def __init__(self, playeridnum, username, password):
-        self.playeridnum = str(playeridnum)
+    def __init__(self, studentidnum, username, password):
+        self.studentidnum = str(studentidnum)
         self.username = username
         self.password = password
-        fpl_bootstrap.username = username    # make USERNAME var global to class instance
-        fpl_bootstrap.password = password    # make PASSWORD var global to class instance
+        ajb_bootstrap.username = username    # make USERNAME global accessor to class instance
+        ajb_bootstrap.password = password    # make PASSWORD global accessor to class instance
 
-        logging.info('fpl_bootstrap:: - create bootstrap ENTRY class instance for player: %s' % self.playeridnum )
+        logging.info('ajb_bootstrap:: - bootstrap ENTRY class instance for student: %s' % self.studentidnum )
 
         self.epl_team_names = {}    # global PRIVATE helper dict accessible from within this base class
         s = requests.Session()
@@ -54,7 +53,7 @@ class fpl_bootstrap:
                 '1136396': 'eyJzIjogIld6VXNOVGc0T0RnM05WMDoxZnYzYWo6WGkxd1lMMnpLeW1pbThFTTVFeGEzVFdUaWtBIiwgInUiOiB7ImxuIjogIkJyYWNlIiwgImZjIjogOCwgImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIn19' }
 
         for pl, cookie_hack in pl_profile_cookies.items():
-            if pl == self.playeridnum:
+            if pl == self.studentidnum:
                 s.cookies.update({'pl_profile': cookie_hack})
                 logging.info('fpl_bootstrap:: FOUND - cookie for playerid: %s' % pl )
                 logging.info('fpl_bootstrap:: SET - cookie to: %s' % cookie_hack )
