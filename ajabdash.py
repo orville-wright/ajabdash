@@ -15,7 +15,17 @@ from six import iteritems
 from six import itervalues
 
 # my private classes & methods
-import ajab_global_urls
+from ajb_bootstrap import ajb_bootstrap
+
+# ajab_global_urls
+SLOOP_URL = "https://www.schoolloop.com/"
+SLOOP_MY_SCHOOL = "https://ois-orinda-ca.schoolloop.com/"
+LOGIN_URL = "portal/login/"
+
+# Portal main URL home pages
+PARENT_HOME = "portal/parent_home/"
+MAIL = "loopmail/inbox?d=x"
+CALENDAR = "calendar/month/"
 
 # logging setup
 logging.basicConfig(level=logging.INFO)
@@ -26,13 +36,15 @@ def main():
     # Mandatory args
     parser.add_argument('-p','--password', help='password for accessing website', required=True, default='nopassword')
     parser.add_argument('-u','--username', help='username for accessing website', required=True, default='iamnobody')
+
     # optional args
-    parser.add_argument('-a','--aplayer', help='team player id', required=False, default='noplayerid')
     parser.add_argument('-d','--dbload', help='save JSON data into mongodb', action='store_true', dest='bool_dbload', required=False, default=False)
     parser.add_argument('-g','--gameweek', help='game weeks to analyze', required=False, default=False)
     parser.add_argument('-l','--league', help='league entry id', required=False, default=False)
     parser.add_argument('-q','--query', help='squad player id', required=False, default=False)
     parser.add_argument('-r','--recleague', help='recursive league details', action='store_true', dest='bool_recleague', required=False, default=False)
+    parser.add_argument('-s','--studentid', help='student id', required=False, default='noplayerid')
+
     # info and help args
     parser.add_argument('-v','--verbose', help='verbose error logging', action='store_true', dest='bool_verbose', required=False, default=False)
     parser.add_argument('-x','--xray', help='enable all test vars/functions', action='store_true', dest='bool_xray', required=False, default=False)
@@ -58,11 +70,8 @@ def main():
     password = args['password']
     xray_testing = args['bool_xray']
 
-"""
-    load in main bootstrap data set.
-    THis is a big JSON dataset. Every EPL squad player and his data/stats etc.
-"""
-    bootstrap = ajb_bootstrap(username, password)         # create an instance of main player database
+    print ( "URL TEST: ", SLOOP_MY_SCHOOL )
+    bootstrap = ajb_bootstrap(100, username, password)         # create an instance of main player database
     # i_am = player_entry(this_player)                      # create instance of players basic ENTRY data-set (publically viewable stuff)
 
 #    print ( "My name is:", i_am.entry['player_first_name'], i_am.entry['player_last_name'] )
@@ -71,3 +80,9 @@ def main():
 #    print ( "My team ID is:", i_am.my_id() )
 #    print ( "My Username:", username )
 #    print ( "My Passowrd:", password )
+
+print ( " " )
+print ( "### main() - DONE ###" )
+
+if __name__ == '__main__':
+    main()
