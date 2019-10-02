@@ -51,7 +51,7 @@ class ajb_bootstrap:
         ajb_bootstrap.username = username    # make USERNAME global accessor to class instance
         ajb_bootstrap.password = password    # make PASSWORD global accessor to class instance
 
-        logging.info('ajb_bootstrap() - INTI bootstrap inst for student: %s' % self.studentidnum )
+        logging.info('ajb_bootstrap() - INIT bootstrap inst for student: %s' % self.studentidnum )
 
         self.epl_team_names = {}    # global PRIVATE helper dict accessible from within this base class
         s = requests.Session()
@@ -61,7 +61,9 @@ class ajb_bootstrap:
         URL0 = SLOOP_MY_SCHOOL + LOGIN_URL
         URL1 = SLOOP_MY_SCHOOL + PARENT_HOME
 
-        bootstrap_cookie = cookiebakery(self.username, self.password, s)
+        if xray_testing is False:
+            bootstrap_cookie = cookiebakery(self.username, self.password, s)
+            # set cookies if we're not Xray testing
 
         if bootstrap_cookie.my_cookie == "FAILED":
             logging.info('ajb_bootstrap() - INIT Error cookiebakery() failed to find/set cookie' )
@@ -88,6 +90,10 @@ class ajb_bootstrap:
             else:
                 logging.info('ajb_bootstrap() - Login AUTH success resp: %s' % self.auth_status )
                 logging.info('ajb_bootstrap() - API data GET resp is   : %s  ' % self.gotdata_status )
+                print ( "** DEBUG - here is the RX0 body **" )
+                print ( rx0.request.body )
+                print ( rx0.request.headers )
+
                 # create JSON dict with players ENTRY data, plus other data thats now available
                 # WARNING: This is a very large JSON data structure with stats on every squad/player in the league
                 #          Dont load into memory multiple times. Best to insert into mongodb & access from there

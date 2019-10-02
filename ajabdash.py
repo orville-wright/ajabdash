@@ -70,7 +70,7 @@ def main():
     password = args['password']
     xray_testing = args['bool_xray']
 
-    print ( "URL TEST: ", SLOOP_MY_SCHOOL )
+    print ( "XRAY TEST: ", xray_testing )
     bootstrap = ajb_bootstrap(100, username, password)         # create an instance of main player database
     # i_am = player_entry(this_player)                      # create instance of players basic ENTRY data-set (publically viewable stuff)
 

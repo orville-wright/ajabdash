@@ -75,6 +75,8 @@ class cookiebakery:
 
         if cookiebakery.my_cookie == "FAILED":
             logging.info('cookiebakery() - ABORT - No cookie found for userid: %s EXITING...' % self.user )
+        else:
+            logging.info('cookiebakery() - SUCCESS - Good cookie & stored inside instance for userid: %s EXITING...' % self.user )
             return
 
         return    # catchall
