@@ -5,6 +5,7 @@ import json
 import sys
 import unicodedata
 import logging
+import argparse
 import http.client
 
 from requests.auth import HTTPBasicAuth
@@ -43,8 +44,11 @@ class ajb_bootstrap:
     api_get_status = ""
     epl_team_names = {}
     my_cookie = ""
+    rx0 = ""
+    rx1 = ""
+    all_auth_cookies = ""
 
-    def __init__(self, studentidnum, username, password):
+    def __init__(self, studentidnum, username, password, args):
         self.studentidnum = str(studentidnum)
         self.username = username
         self.password = password
@@ -53,7 +57,6 @@ class ajb_bootstrap:
 
         logging.info('ajb_bootstrap() - INIT bootstrap inst for student: %s' % self.studentidnum )
 
-        self.epl_team_names = {}    # global PRIVATE helper dict accessible from within this base class
         s = requests.Session()
         user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'}
         #API_URL0 = 'https://fantasy.premierleague.com/a/login'
@@ -61,8 +64,11 @@ class ajb_bootstrap:
         URL0 = SLOOP_MY_SCHOOL + LOGIN_URL
         URL1 = SLOOP_MY_SCHOOL + PARENT_HOME
 
-        if xray_testing is False:
+        if args['bool_xray'] is False:
             bootstrap_cookie = cookiebakery(self.username, self.password, s)
+        else:
+            logging.info('ajb_bootstrap() - INIT quick exit for XRAY testing' )
+            return
             # set cookies if we're not Xray testing
 
         if bootstrap_cookie.my_cookie == "FAILED":
@@ -74,11 +80,15 @@ class ajb_bootstrap:
             rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
             self.auth_status = rx0.status_code
             self.gotdata_status = rx1.status_code
+            ajb_bootstrap.rx0 = rx0    # response to a session GET
+            ajb_bootstrap.rx1 = rx1    # response to a session GET
+
             logging.info('ajb_bootstrap() - INIT : Logon AUTH url: %s' % rx0.url )
             logging.info('ajb_bootstrat() - INIT : API data get url: %s' % rx1.url )
 
-            rx0_auth_cookie = requests.utils.dict_from_cookiejar(s.cookies)
-            logging.info('ajb_bootstrap() - AUTH login resp cookie: %s' % rx0_auth_cookie['????_cookie_to_set_hack_????'] )
+            rx0_auth_cookies = requests.utils.dict_from_cookiejar(s.cookies)
+            ajb_bootstrap.all_auth_cookies = rx0_auth_cookies
+            logging.info('ajb_bootstrap() - AUTH login resp cookie: %s' % rx0_auth_cookies['????_cookie_to_set_hack_????'] )    # just 1 cookie
 
             if rx0.status_code != 200:    # failed to authenticate
                 logging.info('ajb_bootstrap() - INIT Error login AUTH failed with resp %s' % self.auth_status )
@@ -90,9 +100,6 @@ class ajb_bootstrap:
             else:
                 logging.info('ajb_bootstrap() - Login AUTH success resp: %s' % self.auth_status )
                 logging.info('ajb_bootstrap() - API data GET resp is   : %s  ' % self.gotdata_status )
-                print ( "** DEBUG - here is the RX0 body **" )
-                print ( rx0.request.body )
-                print ( rx0.request.headers )
 
                 # create JSON dict with players ENTRY data, plus other data thats now available
                 # WARNING: This is a very large JSON data structure with stats on every squad/player in the league
@@ -119,3 +126,35 @@ class ajb_bootstrap:
 
         logging.info('ajb_bootstrap::my_cookie - cookie ????_cookie_to_set_hack_????: %s' % ajb_bootstrap.my_cookie )
         return ajb_bootstrap.my_cookie
+
+
+    def my_responses(self, resp_x):
+        """Must be either '0' for RX0 or '1' for RX1"""
+
+        logging.info('ajb_bootstrap::my_responses - Dumping response data for: %s' % resp_x )
+        if resp_x == 0:
+            print ( " " )
+            print ( "=========== RX0 body ===========" )
+            print ( ajb_bootstrap.rx0.request.body )
+            print ( " " )
+            print ( "=========== RX0 Headers ===========" )
+            for k, v in ajb_bootstrap.rx0.request.headers.items():
+                print ("Key: ", k, " - ", "Data: ", v)
+            print ( " " )
+            print ( "=========== RX0 ALL Cookies ===========" )
+            print ( json.dumps(ajb_bootstrap.all_auth_cookies, indent=0) )
+        elif resp_x == 1:
+            print ( " " )
+            print ( "=========== RX1 body ===========" )
+            print ( ajb_bootstrap.rx1.request.body )
+            print ( " " )
+            print ( "=========== RX1 Headers ===========" )
+            for k, v in ajb_bootstrap.rx1.request.headers.items():
+                print ("Key: ", k, " - ", "Data: ", v)
+            print ( " " )
+            print ( "=========== RX1 ALL Cookies ===========" )
+            print ( json.dumps(ajb_bootstrap.all_auth_cookies, indent=0) )
+        else:
+            print ( "ajb_bootstrap::my_responses - BAD response given on call - no data to dump")
+
+        return

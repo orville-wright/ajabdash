@@ -30,6 +30,9 @@ CALENDAR = "calendar/month/"
 # logging setup
 logging.basicConfig(level=logging.INFO)
 
+
+
+
 ####################### main ###########################
 def main():
     parser = argparse.ArgumentParser()
@@ -49,8 +52,13 @@ def main():
     parser.add_argument('-v','--verbose', help='verbose error logging', action='store_true', dest='bool_verbose', required=False, default=False)
     parser.add_argument('-x','--xray', help='enable all test vars/functions', action='store_true', dest='bool_xray', required=False, default=False)
 
-
     args = vars(parser.parse_args())
+
+    # now process remainder of cmdline args[]
+    username = args['username']
+    password = args['password']
+    xray_testing = args['bool_xray']
+
     print ( " " )
     print ( "########## bootstraping ##########" )
     print ( " " )
@@ -65,13 +73,9 @@ def main():
     else:
         logging.disable(20)    # Log lvel = INFO
 
-    # now process remainder of cmdline args[]
-    username = args['username']
-    password = args['password']
-    xray_testing = args['bool_xray']
-
-    print ( "XRAY TEST: ", xray_testing )
-    bootstrap = ajb_bootstrap(100, username, password)         # create an instance of main player database
+    bootstrap = ajb_bootstrap(100, username, password, args)         # create an instance of main player database
+    bootstrap.my_responses(0)
+    bootstrap.my_responses(1)
     # i_am = player_entry(this_player)                      # create instance of players basic ENTRY data-set (publically viewable stuff)
 
 #    print ( "My name is:", i_am.entry['player_first_name'], i_am.entry['player_last_name'] )
