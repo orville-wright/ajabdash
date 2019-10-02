@@ -2,7 +2,7 @@
 
 SLOOP_URL = "https://www.schoolloop.com/"
 SLOOP_MY_SCHOOL = "https://ois-orinda-ca.schoolloop.com/"
-LOGIN = "portal/login/"
+LOGIN_URL = "portal/login/"
 
 # Portal main URL home pages
 PARENT_HOME = "portal/parent_home/"
