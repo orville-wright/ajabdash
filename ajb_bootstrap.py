@@ -69,12 +69,12 @@ class ajb_bootstrap:
         else:
             logging.info('ajb_bootstrap() - INIT quick exit for XRAY testing' )
             return
-            # set cookies if we're not Xray testing
 
         if bootstrap_cookie.my_cookie == "FAILED":
             logging.info('ajb_bootstrap() - INIT Error cookiebakery() failed to find/set cookie' )
             return
         else:
+            # executing the real HTTP GET on the wire now...
             bootstrap_cookie.set_cookie(s)
             rx0 = s.get( URL0, headers=user_agent, auth=HTTPBasicAuth(self.username, self.password) )
             rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
@@ -131,8 +131,11 @@ class ajb_bootstrap:
     def my_responses(self, resp_x):
         """Must be either '0' for RX0 or '1' for RX1"""
 
-        logging.info('ajb_bootstrap::my_responses - Dumping response data for: %s' % resp_x )
+        logging.info('ajb_bootstrap::my_responses - Dumping data for *RESPONSE*: %s' % resp_x )
         if resp_x == 0:
+            print ( " " )
+            print ( "=========== RX0 URL ===========" )
+            print ( ajb_bootstrap.rx0.request.url )
             print ( " " )
             print ( "=========== RX0 body ===========" )
             print ( ajb_bootstrap.rx0.request.body )
@@ -144,6 +147,9 @@ class ajb_bootstrap:
             print ( "=========== RX0 ALL Cookies ===========" )
             print ( json.dumps(ajb_bootstrap.all_auth_cookies, indent=0) )
         elif resp_x == 1:
+            print ( " " )
+            print ( "=========== RX1 URL ===========" )
+            print ( ajb_bootstrap.rx1.request.url )
             print ( " " )
             print ( "=========== RX1 body ===========" )
             print ( ajb_bootstrap.rx1.request.body )

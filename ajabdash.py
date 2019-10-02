@@ -74,16 +74,9 @@ def main():
         logging.disable(20)    # Log lvel = INFO
 
     bootstrap = ajb_bootstrap(100, username, password, args)         # create an instance of main player database
-    bootstrap.my_responses(0)
-    bootstrap.my_responses(1)
-    # i_am = player_entry(this_player)                      # create instance of players basic ENTRY data-set (publically viewable stuff)
-
-#    print ( "My name is:", i_am.entry['player_first_name'], i_am.entry['player_last_name'] )
-#    print ( "My name is:", i_am.my_name() )
-#    print ( "My teams name is:", i_am.my_teamname() )
-#    print ( "My team ID is:", i_am.my_id() )
-#    print ( "My Username:", username )
-#    print ( "My Passowrd:", password )
+    if args['bool_xray'] is False:
+        bootstrap.my_responses(0)
+        bootstrap.my_responses(1)
 
 print ( " " )
 print ( "### main() - DONE ###" )
