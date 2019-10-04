@@ -8,6 +8,7 @@ import logging
 import argparse
 import http.client
 
+from urllib import request, parse
 from requests.auth import HTTPBasicAuth
 from requests.auth import HTTPDigestAuth
 from six import iteritems
@@ -20,7 +21,9 @@ import ajab_global_urls
 # ajab_global_urls
 SLOOP_URL = "https://www.schoolloop.com/"
 SLOOP_MY_SCHOOL = "https://ois-orinda-ca.schoolloop.com/"
-LOGIN_URL = "portal/login/"
+LOGIN_URL = "portal/login"
+LOGIN_FORM = "?etarget=login_form"
+# https://ois-orinda-ca.schoolloop.com/portal/login?etarget=login_form
 
 # Portal main URL home pages
 PARENT_HOME = "portal/parent_home/"
@@ -63,6 +66,11 @@ class ajb_bootstrap:
         # API_URL1 = FPL_API_URL + BSS
         URL0 = SLOOP_MY_SCHOOL + LOGIN_URL
         URL1 = SLOOP_MY_SCHOOL + PARENT_HOME
+        URL2 = SLOOP_MY_SCHOOL + PARENT_HOME + LOGIN_FORM
+        url2_data = { 'login_name': 'dbrace', 'password': 'Am3li@++', 'form_data_id': '11454190760382967', 'event_override': 'login' }
+        #url2_data = parse.urlencode(url2_data).encode()
+        post_data = bytes(json.dumps(url2_data), encoding='utf-8')
+        url2_headers = { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36', 'content-type': 'application/json' }
 
         if args['bool_xray'] is False:
             bootstrap_cookie = cookiebakery(self.username, self.password, s)
@@ -78,6 +86,19 @@ class ajb_bootstrap:
             bootstrap_cookie.set_cookie(s)
             rx0 = s.get( URL0, headers=user_agent, auth=HTTPBasicAuth(self.username, self.password) )
             rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
+            # rx2 = requests.post(URL2, data=url2_data)    # explicit5 post
+            rx2 = request.Request(URL2, data=post_data, headers=url2_headers)    # implied POST because data != None
+            rx2_resp = request.urlopen(rx2)
+            print ( "===================" )
+            print ( "** DEBUG : rx2_resp > headers : **", rx2_resp.headers )
+            print ( "===================" )
+            print ( "** DEBUG : rx2_resp > status : **", rx2_resp.status )
+            print ( "===================" )
+            print ( "** DEBUG : rx2_resp > body : **", rx2_resp.url )
+            print ( "===================" )
+            print ( "** DEBUG : rx2_resp > read : **", rx2_resp.read() )
+
+
             self.auth_status = rx0.status_code
             self.gotdata_status = rx1.status_code
             ajb_bootstrap.rx0 = rx0    # response to a session GET
@@ -88,7 +109,7 @@ class ajb_bootstrap:
 
             rx0_auth_cookies = requests.utils.dict_from_cookiejar(s.cookies)
             ajb_bootstrap.all_auth_cookies = rx0_auth_cookies
-            logging.info('ajb_bootstrap() - AUTH login resp cookie: %s' % rx0_auth_cookies['????_cookie_to_set_hack_????'] )    # just 1 cookie
+            logging.info('ajb_bootstrap() - AUTH login resp cookie: %s' % rx0_auth_cookies['COOKIE'] )    # just 1 cookie
 
             if rx0.status_code != 200:    # failed to authenticate
                 logging.info('ajb_bootstrap() - INIT Error login AUTH failed with resp %s' % self.auth_status )
