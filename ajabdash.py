@@ -77,6 +77,7 @@ def main():
     if args['bool_xray'] is False:
         bootstrap.my_responses(0)
         bootstrap.my_responses(1)
+        bootstrap.my_post_resp()    # rx2 POST via URLOPEN
 
 print ( " " )
 print ( "### main() - DONE ###" )

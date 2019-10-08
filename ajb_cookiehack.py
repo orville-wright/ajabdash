@@ -56,9 +56,9 @@ class cookiebakery:
         logging.info('cookiebakery() - INIT cookiebakery instance for user: %s' % self.user )
 
         userid_cookies = { \
-                'david@usakiwi.com': '__cfduid=d6ac2f7b9bd1249d750303b3bde6874311569895002; slid=1569895054259; __cfruid=fb7287adbd466aff340d6825af9aa20289886e13-1570157743; JSESSIONID=q45szp7owg2iaavyj66xxdh;', \
-                'cynthia@usakiwi.com': 'eyJzIjogIld6SXNNalUyTkRBM01USmQ6MWh5aE9BOmdLcXg0S3RkSGR5UVRXRjUwVjhxZHR4RVNTayIsICJ1IjogeyJpZCI6IDI1NjQwNzEyLCAiZm4iOiAiRHJvaWQiLCAibG4iOiAiQWxwaGEiLCAiZmMiOiA1N319', \
-                'amelia@usakiwi.com': 'eyJzIjogIld6SXNOVGc0T0RnM05WMDoxaHlpdU46MlhhRDZlbkx3YU03WFdtb0tBWEhsYXlESlBnIiwgInUiOiB7ImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIiwgImxuIjogIkJyYWNlIiwgImZjIjogOH19', \
+                'dbrace': '__cfduid=d6ac2f7b9bd1249d750303b3bde6874311569895002; slid=1569895054259; __cfruid=fb7287adbd466aff340d6825af9aa20289886e13-1570157743; JSESSIONID=q45szp7owg2iaavyj66xxdh;', \
+                'cynthia': 'eyJzIjogIld6SXNNalUyTkRBM01USmQ6MWh5aE9BOmdLcXg0S3RkSGR5UVRXRjUwVjhxZHR4RVNTayIsICJ1IjogeyJpZCI6IDI1NjQwNzEyLCAiZm4iOiAiRHJvaWQiLCAibG4iOiAiQWxwaGEiLCAiZmMiOiA1N319', \
+                'naruto': 'eyJzIjogIld6SXNOVGc0T0RnM05WMDoxaHlpdU46MlhhRDZlbkx3YU03WFdtb0tBWEhsYXlESlBnIiwgInUiOiB7ImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIiwgImxuIjogIkJyYWNlIiwgImZjIjogOH19', \
                 'family@usakiwi.com': 'eyJzIjogIld6VXNOVGc0T0RnM05WMDoxZnYzYWo6WGkxd1lMMnpLeW1pbThFTTVFeGEzVFdUaWtBIiwgInUiOiB7ImxuIjogIkJyYWNlIiwgImZjIjogOCwgImlkIjogNTg4ODg3NSwgImZuIjogIkRhdmlkIn19' }
 
         for userid, cookie_hack in userid_cookies.items():

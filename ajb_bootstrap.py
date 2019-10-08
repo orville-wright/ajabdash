@@ -30,6 +30,7 @@ PARENT_HOME = "portal/parent_home/"
 MAIL = "loopmail/inbox?d=x"
 CALENDAR = "calendar/month/"
 
+# SLOOP_MY_SCHOOL + PARENT_HOME
 # logging setup
 logging.basicConfig(level=logging.INFO)
 
@@ -49,6 +50,7 @@ class ajb_bootstrap:
     my_cookie = ""
     rx0 = ""
     rx1 = ""
+    rx2_resp = ""
     all_auth_cookies = ""
 
     def __init__(self, studentidnum, username, password, args):
@@ -66,7 +68,7 @@ class ajb_bootstrap:
         # API_URL1 = FPL_API_URL + BSS
         URL0 = SLOOP_MY_SCHOOL + LOGIN_URL
         URL1 = SLOOP_MY_SCHOOL + PARENT_HOME
-        URL2 = SLOOP_MY_SCHOOL + PARENT_HOME + LOGIN_FORM
+        URL2 = SLOOP_MY_SCHOOL + LOGIN_URL + LOGIN_FORM
         url2_data = { 'login_name': 'dbrace', 'password': 'Am3li@++', 'form_data_id': '11454190760382967', 'event_override': 'login' }
         #url2_data = parse.urlencode(url2_data).encode()
         post_data = bytes(json.dumps(url2_data), encoding='utf-8')
@@ -89,23 +91,30 @@ class ajb_bootstrap:
             # rx2 = requests.post(URL2, data=url2_data)    # explicit5 post
             rx2 = request.Request(URL2, data=post_data, headers=url2_headers)    # implied POST because data != None
             rx2_resp = request.urlopen(rx2)
-            print ( "===================" )
-            print ( "** DEBUG : rx2_resp > headers : **", rx2_resp.headers )
-            print ( "===================" )
-            print ( "** DEBUG : rx2_resp > status : **", rx2_resp.status )
-            print ( "===================" )
-            print ( "** DEBUG : rx2_resp > body : **", rx2_resp.url )
-            print ( "===================" )
-            print ( "** DEBUG : rx2_resp > read : **", rx2_resp.read() )
 
+            with request.urlopen(rx2) as mem_file:
+                #x = print(mem_file.read(1000).decode('utf-8'))
+                x = mem_file.read().decode('utf-8')
+                with open('dump_file.txt', 'w') as dump_file:
+                    # dump_file.write(r.text)
+                    dump_file.write( x )
+
+            #dump_url = SLOOP_MY_SCHOOL + PARENT_HOME
+            #rx2.request.urlretrieve(dump_url, "test_dump.txt")
 
             self.auth_status = rx0.status_code
             self.gotdata_status = rx1.status_code
             ajb_bootstrap.rx0 = rx0    # response to a session GET
             ajb_bootstrap.rx1 = rx1    # response to a session GET
+            ajb_bootstrap.rx2_resp = rx2_resp    # response to a urlopen(rx2)
 
-            logging.info('ajb_bootstrap() - INIT : Logon AUTH url: %s' % rx0.url )
-            logging.info('ajb_bootstrat() - INIT : API data get url: %s' % rx1.url )
+            logging.info('ajb_bootstrap() - INIT : GET AUTH rx0 request URL: %s' % rx0.request.url )        # respponse
+            logging.info('ajb_bootstrap() - INIT : GET AUTH rx0 response URL: %s' % rx0.url )        # respponse
+            logging.info('ajb_bootstrap() - INIT : GET AUTH rx1 request URL: %s' % rx1.request.url )        # respponse
+            logging.info('ajb_bootstrat() - INIT : GET AUTH rx1 response URL: %s' % rx1.url )        # respponse
+            logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 request URL: %s' % rx2.get_full_url() )   # respponse
+            logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 response URL: %s' % rx2_resp.url )   # respponse
+
 
             rx0_auth_cookies = requests.utils.dict_from_cookiejar(s.cookies)
             ajb_bootstrap.all_auth_cookies = rx0_auth_cookies
@@ -121,24 +130,8 @@ class ajb_bootstrap:
             else:
                 logging.info('ajb_bootstrap() - Login AUTH success resp: %s' % self.auth_status )
                 logging.info('ajb_bootstrap() - API data GET resp is   : %s  ' % self.gotdata_status )
-
-                # create JSON dict with players ENTRY data, plus other data thats now available
-                # WARNING: This is a very large JSON data structure with stats on every squad/player in the league
-                #          Dont load into memory multiple times. Best to insert into mongodb & access from there
-                # EXTRACT JSON data/fields...
-                # note: entry[] and player[] are not auto loaded when dataset lands (not sure why)
-                #t0 = json.loads(rx1.text)
-                #self.events = t0['events']
-                #self.game_settings = t0['game_settings']
-                #self.phases = t0['phases']
-                #self.teams = t0['teams']                    # All details of EPL teams in Premieership league this year
-                #self.elements = t0['elements']              # big data-set for every EPL squad player full details/stats
-                #self.stats = t0['element_stats']              # big data-set for every EPL squad player full details/stats
-                #self.element_types = t0['element_types']
-                #fpl_bootstrap.current_event = self.current_event    # set class global var so current week is easily accessible
             return
-
-        return     # catchall
+        return     # catch-all
 
 
     def my_cookie(self):
@@ -185,3 +178,16 @@ class ajb_bootstrap:
             print ( "ajb_bootstrap::my_responses - BAD response given on call - no data to dump")
 
         return
+
+
+    def my_post_resp(self):
+            #ajb_bootstrap.rx2_resp = request.urlopen(ajb_bootstrap.rx2)
+            print ( "=========== RX2 HEADERS ===========" )
+            print ( "** DEBUG : rx2_resp > headers : **", ajb_bootstrap.rx2_resp.headers )
+            print ( "=========== RX2 STATUS ===========" )
+            print ( "** DEBUG : rx2_resp > status : **", ajb_bootstrap.rx2_resp.status )
+            print ( "=========== RX2 BODY ===========" )
+            print ( "** DEBUG : rx2_resp > URL : **", ajb_bootstrap.rx2_resp.url )
+            print ( "=========== RX2 READ ===========" )
+            #print ( "** DEBUG : rx2_resp > read : **", ajb_bootstrap.rx2_resp.read() )
+            return
