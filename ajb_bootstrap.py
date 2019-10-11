@@ -95,10 +95,12 @@ class ajb_bootstrap:
             with request.urlopen(rx2) as mem_file:
                 #x = print(mem_file.read(1000).decode('utf-8'))
                 x = mem_file.read().decode('utf-8')
-                with open('dump_file.txt', 'w') as dump_file:
+                with open('dump_file.html', 'w', encoding="utf-8") as dump_file:
                     # dump_file.write(r.text)
                     dump_file.write( x )
 
+            rx2 = request.urlopen(URL1)    # GET method
+            
             #dump_url = SLOOP_MY_SCHOOL + PARENT_HOME
             #rx2.request.urlretrieve(dump_url, "test_dump.txt")
 
@@ -113,6 +115,9 @@ class ajb_bootstrap:
             logging.info('ajb_bootstrap() - INIT : GET AUTH rx1 request URL: %s' % rx1.request.url )        # respponse
             logging.info('ajb_bootstrat() - INIT : GET AUTH rx1 response URL: %s' % rx1.url )        # respponse
             logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 request URL: %s' % rx2.get_full_url() )   # respponse
+            logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 rx2.full_url: %s' % rx2.full_url )   # respponse
+            logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 rx2.get_method(): %s' % rx2.get_method() )   # respponse
+
             logging.info('ajb_bootstrat() - INIT : URLOPEN  rx2 response URL: %s' % rx2_resp.url )   # respponse
 
 
