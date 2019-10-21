@@ -88,7 +88,7 @@ class ajb_bootstrap:
             bootstrap_cookie.set_cookie(s)
             rx0 = s.get( URL0, headers=user_agent, auth=HTTPBasicAuth(self.username, self.password) )
             rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
-            # rx2 = requests.post(URL2, data=url2_data)    # explicit5 post
+            # rx2 = requests.post(URL2, data=url2_data)    # explicit post
             rx2 = request.Request(URL2, data=post_data, headers=url2_headers)    # implied POST because data != None
             rx2_resp = request.urlopen(rx2)
 
@@ -99,8 +99,7 @@ class ajb_bootstrap:
                     # dump_file.write(r.text)
                     dump_file.write( x )
 
-            rx2 = request.urlopen(URL1)    # GET method
-            
+            #rx2 = request.urlopen(URL1)    # GET method
             #dump_url = SLOOP_MY_SCHOOL + PARENT_HOME
             #rx2.request.urlretrieve(dump_url, "test_dump.txt")
 
