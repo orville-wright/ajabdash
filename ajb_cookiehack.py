@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import requests
 from requests import Request, Session
+from requests_html import HTMLSession
 import json
 import sys
 import unicodedata

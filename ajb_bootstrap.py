@@ -64,6 +64,10 @@ class ajb_bootstrap:
 
         s = requests.Session()
         user_agent = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'}
+        s.auth = (self.username, self.password)
+        #s.headers.update({'x-test': 'true'})
+
+
         #API_URL0 = 'https://fantasy.premierleague.com/a/login'
         # API_URL1 = FPL_API_URL + BSS
         URL0 = SLOOP_MY_SCHOOL + LOGIN_URL
@@ -71,7 +75,7 @@ class ajb_bootstrap:
         URL2 = SLOOP_MY_SCHOOL + LOGIN_URL + LOGIN_FORM
         url2_data = { 'login_name': 'dbrace', 'password': 'Am3li@++', 'form_data_id': '11454190760382967', 'event_override': 'login' }
         #url2_data = parse.urlencode(url2_data).encode()
-        post_data = bytes(json.dumps(url2_data), encoding='utf-8')
+        url2_post_data = bytes(json.dumps(url2_data), encoding='utf-8')
         url2_headers = { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36', 'content-type': 'application/json' }
 
         if args['bool_xray'] is False:
@@ -86,10 +90,12 @@ class ajb_bootstrap:
         else:
             # executing the real HTTP GET on the wire now...
             bootstrap_cookie.set_cookie(s)
-            rx0 = s.get( URL0, headers=user_agent, auth=HTTPBasicAuth(self.username, self.password) )
-            rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
+            rx0 = s.get( URL1, headers=user_agent, auth=HTTPBasicAuth(self.username, self.password) )
+            #rx1 = s.get( URL1, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
+            rx1 = s.get( URL2, headers=user_agent, auth=HTTPDigestAuth(self.username, self.password) )
+
             # rx2 = requests.post(URL2, data=url2_data)    # explicit post
-            rx2 = request.Request(URL2, data=post_data, headers=url2_headers)    # implied POST because data != None
+            rx2 = request.Request(URL2, data=url2_post_data, headers=url2_headers)    # implied POST because data != None
             rx2_resp = request.urlopen(rx2)
 
             with request.urlopen(rx2) as mem_file:
